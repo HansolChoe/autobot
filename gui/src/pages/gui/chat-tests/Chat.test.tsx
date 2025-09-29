@@ -2,15 +2,15 @@ import { act } from "@testing-library/react";
 import { addAndSelectMockLlm } from "../../../util/test/config";
 import { renderWithProviders } from "../../../util/test/render";
 import {
-  getElementByTestId,
-  getElementByText,
-  sendInputWithMockedResponse,
+    getElementByTestId,
+    getElementByText,
+    sendInputWithMockedResponse,
 } from "../../../util/test/utils";
 import { Chat } from "../Chat";
 
 test("should render input box", async () => {
   await renderWithProviders(<Chat />);
-  await getElementByTestId("continue-input-box-main-editor-input");
+  await getElementByTestId("autobot-input-box-main-editor-input");
 });
 
 test("should be able to toggle modes", async () => {

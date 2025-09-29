@@ -18,9 +18,9 @@ import styled from "styled-components";
 import { Button, lightGray, vscBackground } from "../../components";
 import { useFindWidget } from "../../components/find/FindWidget";
 import TimelineItem from "../../components/gui/TimelineItem";
+import AutobotInputBox from "../../components/mainInput/AutobotInputBox";
 import { NewSessionButton } from "../../components/mainInput/belowMainInput/NewSessionButton";
 import ThinkingBlockPeek from "../../components/mainInput/belowMainInput/ThinkingBlockPeek";
-import ContinueInputBox from "../../components/mainInput/ContinueInputBox";
 import { useOnboardingCard } from "../../components/OnboardingCard";
 import StepContainer from "../../components/StepContainer";
 import { TabBar } from "../../components/TabBar/TabBar";
@@ -43,14 +43,14 @@ import { streamResponseThunk } from "../../redux/thunks/streamResponse";
 import { isJetBrains, isMetaEquivalentKeyPressed } from "../../util";
 import { ToolCallDiv } from "./ToolCallDiv";
 
+import { useStore } from "react-redux";
 import { FatalErrorIndicator } from "../../components/config/FatalErrorNotice";
 import InlineErrorMessage from "../../components/mainInput/InlineErrorMessage";
+import { RootState } from "../../redux/store";
 import { cancelStream } from "../../redux/thunks/cancelStream";
 import { EmptyChatBody } from "./EmptyChatBody";
 import { ExploreDialogWatcher } from "./ExploreDialogWatcher";
 import { useAutoScroll } from "./useAutoScroll";
-import { useStore } from "react-redux";
-import { RootState } from "../../redux/store";
 
 // Helper function to find the index of the latest conversation summary
 function findLatestSummaryIndex(history: ChatHistoryItem[]): number {
@@ -285,7 +285,7 @@ export function Chat() {
 
       if (message.role === "user") {
         return (
-          <ContinueInputBox
+          <AutobotInputBox
             onEnter={(editorState, modifiers) =>
               sendInput(editorState, modifiers, index)
             }
@@ -412,7 +412,7 @@ export function Chat() {
           ))}
       </StepsDiv>
       <div className={"relative"}>
-        <ContinueInputBox
+        <AutobotInputBox
           isMainInput
           isLastUserInput={false}
           onEnter={(editorState, modifiers, editor) =>

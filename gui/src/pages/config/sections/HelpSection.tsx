@@ -1,9 +1,9 @@
 import {
-  DocumentArrowUpIcon,
-  LinkIcon,
-  NumberedListIcon,
-  PaintBrushIcon,
-  TableCellsIcon,
+    DocumentArrowUpIcon,
+    LinkIcon,
+    NumberedListIcon,
+    PaintBrushIcon,
+    TableCellsIcon,
 } from "@heroicons/react/24/outline";
 import { useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -52,7 +52,7 @@ const vscodeShortcuts: Omit<KeyboardShortcutProps, "isEven">[] = [
   {
     shortcut: "cmd L",
     description:
-      "New Chat / New Chat With Selected Code / Close Continue Sidebar If Chat Already In Focus",
+      "New Chat / New Chat With Selected Code / Close Autobot Sidebar If Chat Already In Focus",
   },
   {
     shortcut: "cmd backspace",
@@ -65,7 +65,7 @@ const vscodeShortcuts: Omit<KeyboardShortcutProps, "isEven">[] = [
   {
     shortcut: "cmd shift L",
     description:
-      "Focus Current Chat / Add Selected Code To Current Chat / Close Continue Sidebar If Chat Already In Focus",
+      "Focus Current Chat / Add Selected Code To Current Chat / Close Autobot Sidebar If Chat Already In Focus",
   },
   {
     shortcut: "cmd shift R",
@@ -113,7 +113,7 @@ const jetbrainsShortcuts: Omit<KeyboardShortcutProps, "isEven">[] = [
   {
     shortcut: "cmd J",
     description:
-      "New Chat / New Chat With Selected Code / Close Continue Sidebar If Chat Already In Focus",
+      "New Chat / New Chat With Selected Code / Close Autobot Sidebar If Chat Already In Focus",
   },
   {
     shortcut: "cmd backspace",
@@ -126,7 +126,7 @@ const jetbrainsShortcuts: Omit<KeyboardShortcutProps, "isEven">[] = [
   {
     shortcut: "cmd shift J",
     description:
-      "Focus Current Chat / Add Selected Code To Current Chat / Close Continue Sidebar If Chat Already In Focus",
+      "Focus Current Chat / Add Selected Code To Current Chat / Close Autobot Sidebar If Chat Already In Focus",
   },
   {
     shortcut: "cmd shift backspace",
@@ -180,7 +180,7 @@ export function HelpSection() {
           <Card className="!p-0">
             <div className="flex flex-col">
               <ConfigRow
-                title="Continue Hub"
+                title="Autobot Hub"
                 description="Visit hub.continue.dev to explore custom agents and blocks"
                 icon={LinkIcon}
                 onClick={() =>
@@ -190,7 +190,7 @@ export function HelpSection() {
 
               <ConfigRow
                 title="Documentation"
-                description="Learn how to configure and use Continue"
+                description="Learn how to configure and use Autobot"
                 icon={LinkIcon}
                 onClick={() =>
                   ideMessenger.post("openUrl", "https://docs.continue.dev/")

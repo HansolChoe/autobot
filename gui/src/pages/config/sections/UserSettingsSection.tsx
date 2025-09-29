@@ -1,6 +1,6 @@
 import {
-  SharedConfigSchema,
-  modifyAnyConfigWithSharedConfig,
+    SharedConfigSchema,
+    modifyAnyConfigWithSharedConfig,
 } from "core/config/sharedConfig";
 import { HubSessionInfo } from "core/control-plane/AuthTypes";
 import { isContinueTeamMember } from "core/util/isContinueTeamMember";
@@ -12,8 +12,8 @@ import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { updateConfig } from "../../../redux/slices/configSlice";
 import { selectCurrentOrg } from "../../../redux/slices/profilesSlice";
 import { setLocalStorage } from "../../../util/localStorage";
+import { AutobotFeaturesMenu } from "../components/AutobotFeaturesMenu";
 import { ConfigHeader } from "../components/ConfigHeader";
-import { ContinueFeaturesMenu } from "../components/ContinueFeaturesMenu";
 import { UserSetting } from "../components/UserSetting";
 
 export function UserSettingsSection() {
@@ -184,7 +184,7 @@ export function UserSettingsSection() {
                 <UserSetting
                   type="toggle"
                   title="Allow Anonymous Telemetry"
-                  description="Allows Continue to send anonymous telemetry."
+                  description="Allows Autobot to send anonymous telemetry."
                   value={allowAnonymousTelemetry}
                   disabled={disableTelemetryToggle}
                   onChange={(value) =>
@@ -307,7 +307,7 @@ export function UserSettingsSection() {
                   <UserSetting
                     type="toggle"
                     title="Only use system message tools"
-                    description=" Continue will not attempt to use native tool calling and will only use system message tools."
+                    description=" Autobot will not attempt to use native tool calling and will only use system message tools."
                     value={onlyUseSystemMessageTools}
                     onChange={(value) =>
                       handleUpdate({ onlyUseSystemMessageTools: value })
@@ -333,7 +333,7 @@ export function UserSettingsSection() {
                   />
 
                   {hasContinueEmail && (
-                    <ContinueFeaturesMenu
+                    <AutobotFeaturesMenu
                       enableStaticContextualization={
                         enableStaticContextualization
                       }

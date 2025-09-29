@@ -7,8 +7,8 @@ import ConfirmationDialog from "../../../../components/dialogs/ConfirmationDialo
 import { IdeMessengerContext } from "../../../../context/IdeMessenger";
 import { useWebviewListener } from "../../../../hooks/useWebviewListener";
 import {
-  setDialogMessage,
-  setShowDialog,
+    setDialogMessage,
+    setShowDialog,
 } from "../../../../redux/slices/uiSlice";
 import { isJetBrains } from "../../../../util";
 import IndexingProgressBar from "./IndexingProgressBar";
@@ -68,7 +68,7 @@ function IndexingProgress() {
               "Your index appears corrupted. We recommend clearing and rebuilding it, " +
               "which may take time for large codebases.\n\n" +
               "For a faster rebuild without clearing data, press 'Shift + Command + P' to open " +
-              "the Command Palette, and type out 'Continue: Force Codebase Re-Indexing'"
+              "the Command Palette, and type out 'Autobot: Force Codebase Re-Indexing'"
             }
             onConfirm={() => {
               posthog.capture("rebuild_index_clicked");

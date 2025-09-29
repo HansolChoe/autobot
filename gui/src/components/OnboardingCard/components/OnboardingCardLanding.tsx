@@ -7,7 +7,7 @@ import { selectCurrentOrg } from "../../../redux/slices/profilesSlice";
 import { selectFirstHubProfile } from "../../../redux/thunks/selectFirstHubProfile";
 import { hasPassedFTL } from "../../../util/freeTrial";
 import { ToolTip } from "../../gui/Tooltip";
-import ContinueLogo from "../../svg/ContinueLogo";
+import AutobotLogo from "../../svg/AutobotLogo";
 import { useOnboardingCard } from "../hooks/useOnboardingCard";
 
 export function OnboardingCardLanding({
@@ -33,7 +33,7 @@ export function OnboardingCardLanding({
         void dispatch(selectFirstHubProfile());
 
         ideMessenger.post("showTutorial", undefined);
-        ideMessenger.post("showToast", ["info", "🎉 Welcome to Continue!"]);
+        ideMessenger.post("showToast", ["info", "🎉 Welcome to Autobot!"]);
       }
     });
   }
@@ -51,20 +51,20 @@ export function OnboardingCardLanding({
   return (
     <div className="xs:px-0 flex w-full max-w-full flex-col items-center justify-center px-4 text-center">
       <div className="xs:flex hidden">
-        <ContinueLogo height={75} />
+        <AutobotLogo height={75} />
       </div>
 
       {pastFreeTrialLimit ? (
         <>
           <p className="xs:w-3/4 w-full text-sm">
-            You've reached the free trial limit. Visit the Continue Platform to
+            You've reached the free trial limit. Visit the Autobot Platform to
             select a Coding Agent.
           </p>
           <Button
             onClick={openPastFreeTrialOnboarding}
             className="mt-4 grid w-full grid-flow-col items-center gap-2"
           >
-            Go to Continue Platform
+            Go to Autobot Platform
           </Button>
         </>
       ) : (
@@ -93,7 +93,7 @@ export function OnboardingCardLanding({
             onClick={onGetStarted}
             className="mt-4 grid w-full grid-flow-col items-center gap-2"
           >
-            Log in to Continue Hub
+            Log in to Autobot Hub
           </Button>
         </>
       )}

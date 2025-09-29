@@ -1,14 +1,14 @@
 import { vscForeground } from "..";
 
-interface ContinueLogoProps {
+interface AutobotLogoProps {
   height?: number;
   width?: number;
 }
 
-export default function ContinueLogo({
+export default function AutobotLogo({
   height = 987,
   width = 299,
-}: ContinueLogoProps) {
+}: AutobotLogoProps) {
   return (
     <svg
       width={width}

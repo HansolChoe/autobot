@@ -18,7 +18,7 @@
   "homepage": "https://continue.dev",
   "qna": "https://github.com/continuedev/continue/issues/new/choose",
   "license": "Apache-2.0",
-  "displayName": "Continue - open-source AI code agent",
+  "displayName": "Autobot - open-source AI code agent",
   "pricing": "Free",
   "description": "The leading open-source AI code agent",
   "publisher": "Continue",
@@ -84,7 +84,7 @@
       }
     ],
     "configuration": {
-      "title": "Continue",
+      "title": "Autobot",
       "properties": {
         "continue.telemetryEnabled": {
           "type": "boolean",
@@ -484,7 +484,7 @@
     "submenus": [
       {
         "id": "continue.continueSubMenu",
-        "label": "Continue"
+        "label": "Autobot"
       }
     ],
     "menus": {
@@ -583,7 +583,7 @@
       "activitybar": [
         {
           "id": "continue",
-          "title": "Continue",
+          "title": "Autobot",
           "icon": "media/sidebar-icon.png"
         }
       ],
@@ -600,7 +600,7 @@
         {
           "type": "webview",
           "id": "continue.continueGUIView",
-          "name": "Continue",
+          "name": "Autobot",
           "icon": "media/sidebar-icon.png",
           "visibility": "visible"
         }
