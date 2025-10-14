@@ -57,8 +57,8 @@ import {
 } from "../util/paths";
 import { localPathToUri } from "../util/pathToUri";
 
-import { PolicySingleton } from "../control-plane/PolicySingleton";
 import CustomContextProviderClass from "../context/providers/CustomContextProvider";
+import { PolicySingleton } from "../control-plane/PolicySingleton";
 import { getBaseToolDefinitions } from "../tools";
 import { resolveRelativePathInDir } from "../util/ideUtils";
 import { getWorkspaceRcConfigs } from "./json/loadRcConfigs";
@@ -973,5 +973,6 @@ async function loadContinueConfigFromJson(
 export {
   finalToBrowserConfig,
   loadContinueConfigFromJson,
-  type BrowserSerializedContinueConfig,
+  type BrowserSerializedContinueConfig
 };
+

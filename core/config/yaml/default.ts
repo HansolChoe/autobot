@@ -1,4 +1,5 @@
 import { AssistantUnrolled } from "@continuedev/config-yaml";
+import { PYTHON_SLASH_COMMAND } from "../prompts";
 
 // TODO
 export const defaultConfigYaml: AssistantUnrolled = {
@@ -7,6 +8,7 @@ export const defaultConfigYaml: AssistantUnrolled = {
   name: "Local Agent",
   version: "1.0.0",
   schema: "v1",
+  prompts: [PYTHON_SLASH_COMMAND],
 };
 
 export const defaultConfigYamlJetBrains: AssistantUnrolled = {
@@ -15,4 +17,5 @@ export const defaultConfigYamlJetBrains: AssistantUnrolled = {
   name: "Local Agent",
   version: "1.0.0",
   schema: "v1",
+  prompts: [PYTHON_SLASH_COMMAND],
 };

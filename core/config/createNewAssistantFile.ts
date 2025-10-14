@@ -1,5 +1,6 @@
 import { IDE } from "..";
 import { joinPathsToUri } from "../util/uri";
+import { PYTHON_SLASH_COMMAND_YAML } from "./prompts";
 
 const DEFAULT_ASSISTANT_FILE = `# This is an example agent configuration file
 # It is used to define custom AI agents within Continue
@@ -27,6 +28,11 @@ models:
 # https://docs.continue.dev/customization/mcp-tools
 mcpServers:
   - uses: anthropic/memory-mcp
+
+# Slash commands for this agent
+# https://docs.continue.dev/customization/slash-commands
+prompts:
+${PYTHON_SLASH_COMMAND_YAML}
 `;
 
 export async function createNewAssistantFile(
