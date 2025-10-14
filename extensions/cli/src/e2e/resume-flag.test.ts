@@ -2,14 +2,14 @@ import * as fs from "fs/promises";
 import * as path from "path";
 
 import {
-  cleanupTestContext,
-  createTestContext,
-  runCLI,
+    cleanupTestContext,
+    createTestContext,
+    runCLI,
 } from "../test-helpers/cli-helpers.js";
 import {
-  setupMockLLMTest,
-  cleanupMockLLMServer,
-  type MockLLMServer,
+    cleanupMockLLMServer,
+    setupMockLLMTest,
+    type MockLLMServer,
 } from "../test-helpers/mock-llm-server.js";
 
 describe("E2E: Resume Flag", () => {

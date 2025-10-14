@@ -106,8 +106,8 @@ export function getModelName(config: AuthConfig): string | null {
 import { autoSelectOrganizationAndConfig } from "./orgSelection.js";
 import { pathToUri, slugToUri, uriToPath, uriToSlug } from "./uriUtils.js";
 import {
-  handleCliOrgForAuthenticatedConfig,
-  handleCliOrgForEnvironmentAuth,
+    handleCliOrgForAuthenticatedConfig,
+    handleCliOrgForEnvironmentAuth,
 } from "./workos.helpers.js";
 
 /**

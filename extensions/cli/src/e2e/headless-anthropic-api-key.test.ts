@@ -2,14 +2,14 @@ import * as fs from "fs/promises";
 import * as path from "path";
 
 import {
-  cleanupTestContext,
-  createTestContext,
-  runCLI,
+    cleanupTestContext,
+    createTestContext,
+    runCLI,
 } from "../test-helpers/cli-helpers.js";
 import {
-  cleanupMockLLMServer,
-  type MockLLMServer,
-  createMockLLMServer,
+    cleanupMockLLMServer,
+    createMockLLMServer,
+    type MockLLMServer,
 } from "../test-helpers/mock-llm-server.js";
 
 describe("E2E: Headless Mode with ANTHROPIC_API_KEY", () => {

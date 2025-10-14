@@ -2,9 +2,9 @@ import fs from "fs/promises";
 import path from "path";
 
 import {
-  cleanupTestContext,
-  createTestContext,
-  runCLI,
+    cleanupTestContext,
+    createTestContext,
+    runCLI,
 } from "../test-helpers/cli-helpers.js";
 import { cleanupMocks } from "../test-helpers/mock-helpers.js";
 
