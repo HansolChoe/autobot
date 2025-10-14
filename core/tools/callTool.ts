@@ -10,6 +10,7 @@ import { createRuleBlockImpl } from "./implementations/createRuleBlock";
 import { fetchUrlContentImpl } from "./implementations/fetchUrlContent";
 import { fileGlobSearchImpl } from "./implementations/globSearch";
 import { grepSearchImpl } from "./implementations/grepSearch";
+import { pythonCodeGenImpl } from "./implementations/hyuPythonCodeGen";
 import { lsToolImpl } from "./implementations/lsTool";
 import { readCurrentlyOpenFileImpl } from "./implementations/readCurrentlyOpenFile";
 import { readFileImpl } from "./implementations/readFile";
@@ -178,6 +179,8 @@ export async function callBuiltInTool(
       return await requestRuleImpl(args, extras);
     case BuiltInToolNames.CodebaseTool:
       return await codebaseToolImpl(args, extras);
+    case BuiltInToolNames.PythonCodeGen:
+      return await pythonCodeGenImpl(args, extras);
     case BuiltInToolNames.ViewRepoMap:
       return await viewRepoMapImpl(args, extras);
     case BuiltInToolNames.ViewSubdirectory:
