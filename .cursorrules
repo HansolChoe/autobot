@@ -1,0 +1,20 @@
+# Cursor Rules for Continue/Autobot Project
+
+Please refer to AGENTS.md for project-specific guidelines, rules, and context. This file contains important information about:
+
+- Project structure and architecture
+- Migration guidelines (Continue → Autobot branding)
+- Code style and conventions
+- Build and development commands
+- Testing instructions
+- Security considerations
+- File organization and relationships
+
+When working on this project, always consult AGENTS.md for:
+- UI component naming conventions
+- Internal API naming (preserve Continue naming)
+- Build and development workflows
+- Configuration file relationships
+- Default slash commands and prompts
+
+If you need to modify AGENTS.md or any project rules, please update both the source file and this .cursorrules file to maintain consistency.
