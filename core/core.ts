@@ -4,8 +4,8 @@ import { v4 as uuidv4 } from "uuid";
 
 import { CompletionProvider } from "./autocomplete/CompletionProvider";
 import {
-  openedFilesLruCache,
-  prevFilepaths,
+    openedFilesLruCache,
+    prevFilepaths,
 } from "./autocomplete/util/openedFilesLruCache";
 import { ConfigHandler } from "./config/ConfigHandler";
 import { SYSTEM_PROMPT_DOT_FILE } from "./config/getWorkspaceContinueRuleDotFiles";
@@ -29,24 +29,24 @@ import historyManager from "./util/history";
 import { editConfigFile, migrateV1DevDataFiles } from "./util/paths";
 import { Telemetry } from "./util/posthog";
 import {
-  isProcessBackgrounded,
-  killTerminalProcess,
-  markProcessAsBackgrounded,
+    isProcessBackgrounded,
+    killTerminalProcess,
+    markProcessAsBackgrounded,
 } from "./util/processTerminalStates";
 import { getSymbolsForManyFiles } from "./util/treeSitter";
 import { TTS } from "./util/tts";
 
 import {
-  CompleteOnboardingPayload,
-  ContextItemId,
-  ContextItemWithId,
-  IdeSettings,
-  ModelDescription,
-  Position,
-  RangeInFile,
-  ToolCall,
-  type ContextItem,
-  type IDE,
+    CompleteOnboardingPayload,
+    ContextItemId,
+    ContextItemWithId,
+    IdeSettings,
+    ModelDescription,
+    Position,
+    RangeInFile,
+    ToolCall,
+    type ContextItem,
+    type IDE,
 } from ".";
 
 import { BLOCK_TYPES, ConfigYaml } from "@continuedev/config-yaml";
@@ -56,9 +56,9 @@ import { createNewAssistantFile } from "./config/createNewAssistantFile";
 import { isLocalDefinitionFile } from "./config/loadLocalAssistants";
 import { CodebaseRulesCache } from "./config/markdown/loadCodebaseRules";
 import {
-  setupLocalConfig,
-  setupProviderConfig,
-  setupQuickstartConfig,
+    setupLocalConfig,
+    setupProviderConfig,
+    setupQuickstartConfig,
 } from "./config/onboarding";
 import { createNewWorkspaceBlockFile } from "./config/workspace/workspaceBlocks";
 import { MCPManagerSingleton } from "./context/mcp/MCPManagerSingleton";

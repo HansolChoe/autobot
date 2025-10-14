@@ -5,14 +5,14 @@ import { IMessenger } from "core/protocol/messenger";
 import FileSystemIde from "core/util/filesystem";
 import fs from "fs";
 import {
-  ChildProcessWithoutNullStreams,
-  execSync,
-  spawn,
+    ChildProcessWithoutNullStreams,
+    execSync,
+    spawn,
 } from "node:child_process";
 import path from "path";
 import {
-  CoreBinaryMessenger,
-  CoreBinaryTcpMessenger,
+    CoreBinaryMessenger,
+    CoreBinaryTcpMessenger,
 } from "../src/IpcMessenger";
 
 // jest.setTimeout(100_000);

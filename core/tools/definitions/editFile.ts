@@ -11,7 +11,7 @@ export const NO_PARALLEL_TOOL_CALLING_INSTRUCTION =
   "This tool CANNOT be called in parallel with other tools.";
 
 const CHANGES_DESCRIPTION =
-  "Any modifications to the file, showing only needed changes. Do NOT wrap this in a codeblock or write anything besides the code changes. In larger files, use brief language-appropriate placeholders for large unmodified sections, e.g. '// ... existing code ...'";
+  "The complete modified file content with ALL original comments, docstrings, and documentation preserved. Do NOT wrap this in a codeblock or write anything besides the code changes. CRITICAL: You must include ALL existing comments from the original file. Do not remove or omit any comments, docstrings, or documentation. Only use placeholders like '// ... existing code ...' for sections that contain no meaningful comments or documentation.";
 
 export const editFileTool: Tool = {
   type: "function",
@@ -24,7 +24,14 @@ export const editFileTool: Tool = {
   isInstant: false,
   function: {
     name: BuiltInToolNames.EditExistingFile,
-    description: `Use this tool to edit an existing file. If you don't know the contents of the file, read it first.\n${EDIT_CODE_INSTRUCTIONS}\n${NO_PARALLEL_TOOL_CALLING_INSTRUCTION}`,
+    description: `Use this tool to edit an existing file. If you don't know the contents of the file, read it first.
+
+CRITICAL: When providing the 'changes' parameter, you MUST include ALL existing comments, docstrings, and documentation from the original file. Do not remove or omit any comments. The 'changes' parameter should contain the complete modified code with all original comments preserved.
+
+IMPORTANT: When editing files, preserve ALL existing comments, docstrings, and documentation. Do not remove or modify comments unless explicitly requested. Only use placeholders like '// ... existing code ...' for sections that contain no meaningful comments or documentation.
+
+${EDIT_CODE_INSTRUCTIONS}
+${NO_PARALLEL_TOOL_CALLING_INSTRUCTION}`,
     parameters: {
       type: "object",
       required: ["filepath", "changes"],
@@ -46,6 +53,9 @@ export const editFileTool: Tool = {
     prefix: `To edit an EXISTING file, use the ${BuiltInToolNames.EditExistingFile} tool with
 - filepath: the relative filepath to the file.
 - changes: ${CHANGES_DESCRIPTION}
+
+CRITICAL: The 'changes' parameter must contain the COMPLETE modified code with ALL original comments, docstrings, and documentation preserved. Do not remove or omit any comments from the original file. Include all existing comments in your changes.
+
 Only use this tool if you already know the contents of the file. Otherwise, use the ${BuiltInToolNames.ReadFile} or ${BuiltInToolNames.ReadCurrentlyOpenFile} tool to read it first.
 For example:`,
     exampleArgs: [
