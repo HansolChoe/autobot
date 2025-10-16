@@ -263,7 +263,12 @@ export function FindAndReplaceDisplay({
   if (diffResult?.error) {
     return (
       <div className="text-description mt-2 px-3">
-        The searched string was not found in the file
+        <div className="mb-2 font-semibold text-red-600">
+          The searched string was not found in the file
+        </div>
+        <div className="rounded bg-gray-100 p-2 font-mono text-xs text-gray-500">
+          {diffResult.error}
+        </div>
       </div>
     );
   }

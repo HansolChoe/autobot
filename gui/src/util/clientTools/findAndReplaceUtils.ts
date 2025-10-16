@@ -16,7 +16,30 @@ export function performFindAndReplace(
   const errorContext = index !== undefined ? `edit at index ${index}: ` : "";
   // Check if old_string exists in current content
   if (!content.includes(oldString)) {
-    throw new Error(`${errorContext}string not found in file: "${oldString}"`);
+    // Enhanced debugging information
+    const debugInfo = {
+      oldStringLength: oldString.length,
+      contentLength: content.length,
+      oldStringPreview:
+        oldString.substring(0, 100) + (oldString.length > 100 ? "..." : ""),
+      contentPreview:
+        content.substring(0, 200) + (content.length > 200 ? "..." : ""),
+      oldStringCharCodes: Array.from(oldString)
+        .map((c) => c.charCodeAt(0))
+        .slice(0, 20),
+      contentCharCodes: Array.from(content)
+        .map((c) => c.charCodeAt(0))
+        .slice(0, 20),
+    };
+
+    console.error("FindAndReplace Debug Info:", debugInfo);
+
+    throw new Error(
+      `${errorContext}string not found in file: "${oldString}"\n` +
+        `Debug info: oldString length=${debugInfo.oldStringLength}, content length=${debugInfo.contentLength}\n` +
+        `OldString preview: "${debugInfo.oldStringPreview}"\n` +
+        `Content preview: "${debugInfo.contentPreview}"`,
+    );
   }
 
   if (replaceAll) {
