@@ -1,4 +1,4 @@
-import Handlebars from "handlebars";
+import * as HandlebarsImport from "handlebars";
 import { NEXT_EDIT_MODELS } from "../../llm/constants";
 import {
   INSTINCT_USER_PROMPT_PREFIX,
@@ -10,6 +10,9 @@ import {
   MERCURY_RECENTLY_VIEWED_CODE_SNIPPETS_OPEN,
 } from "../constants";
 import { NextEditTemplate, TemplateVars } from "../types";
+
+// Handle both default export and namespace export for esbuild compatibility
+const Handlebars = (HandlebarsImport as any).default || HandlebarsImport;
 
 // Keep the template registry
 export const NEXT_EDIT_MODEL_TEMPLATES: Record<

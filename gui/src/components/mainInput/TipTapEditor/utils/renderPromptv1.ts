@@ -6,7 +6,11 @@ import {
 import { SUPPORTED_PROMPT_CONTEXT_PROVIDERS } from "core/promptFiles";
 import { renderTemplatedString } from "core/util/handlebars/renderTemplatedString";
 import { resolveRelativePathInDir } from "core/util/ideUtils";
+import * as HandlebarsImport from "handlebars";
 import { IIdeMessenger } from "../../../../context/IdeMessenger";
+
+// Handle both default export and namespace export for esbuild compatibility
+const Handlebars = (HandlebarsImport as any).default || HandlebarsImport;
 
 export async function getRenderedV1Prompt(
   ideMessenger: IIdeMessenger,
@@ -42,9 +46,8 @@ export async function getRenderedV1Prompt(
   const getUriFromPath = (path: string) => {
     return resolveRelativePathInDir(path, ideMessenger.ide, workspaceDirs);
   };
-  const handlebars = await import("handlebars");
   let rendered = await renderTemplatedString(
-    handlebars,
+    Handlebars,
     command.prompt,
     { input: userInput },
     handleBarHelpers,

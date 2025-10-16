@@ -1,4 +1,4 @@
-import Handlebars from "handlebars";
+import * as HandlebarsImport from "handlebars";
 import {
   BaseCompletionOptions,
   IdeSettings,
@@ -30,10 +30,10 @@ import HuggingFaceTEIEmbeddingsProvider from "./HuggingFaceTEI";
 import HuggingFaceTGI from "./HuggingFaceTGI";
 import Inception from "./Inception";
 import Kindo from "./Kindo";
+import Lemonade from "./Lemonade";
 import LlamaCpp from "./LlamaCpp";
 import Llamafile from "./Llamafile";
 import LlamaStack from "./LlamaStack";
-import Lemonade from "./Lemonade";
 import LMStudio from "./LMStudio";
 import Mistral from "./Mistral";
 import MockLLM from "./Mock";
@@ -64,6 +64,9 @@ import Vllm from "./Vllm";
 import Voyage from "./Voyage";
 import WatsonX from "./WatsonX";
 import xAI from "./xAI";
+
+// Handle both default export and namespace export for esbuild compatibility
+const Handlebars = (HandlebarsImport as any).default || HandlebarsImport;
 export const LLMClasses = [
   Anthropic,
   Cohere,

@@ -1,4 +1,8 @@
+import * as HandlebarsImport from "handlebars";
 import { v4 as uuidv4 } from "uuid";
+
+// Handle both default export and namespace export for esbuild compatibility
+const Handlebars = (HandlebarsImport as any).default || HandlebarsImport;
 
 export type HandlebarsType = typeof import("handlebars");
 
@@ -20,8 +24,26 @@ export function registerHelpers(
 } {
   const promises: { [key: string]: Promise<string> } = {};
 
+  // Use the imported Handlebars instead of the passed parameter
+  const handlebarsInstance = Handlebars;
+
+  // Debug: Check if handlebars object is valid
+  if (!handlebarsInstance) {
+    console.error("Handlebars object is null or undefined");
+    throw new Error("Handlebars object is null or undefined");
+  }
+
+  if (typeof handlebarsInstance.registerHelper !== "function") {
+    console.error("Handlebars.registerHelper is not a function", {
+      handlebars: handlebarsInstance,
+      registerHelperType: typeof handlebarsInstance.registerHelper,
+      handlebarsKeys: Object.keys(handlebarsInstance),
+    });
+    throw new Error("Handlebars.registerHelper is not a function");
+  }
+
   for (const [name, helper] of helpers) {
-    handlebars.registerHelper(name, (...args) => {
+    handlebarsInstance.registerHelper(name, (...args: any[]) => {
       const id = uuidv4();
       promises[id] = helper(...args);
       return `__${id}__`;
@@ -39,8 +61,11 @@ export async function prepareTemplatedFilepaths(
   readFile: (filepath: string) => Promise<string>,
   getUriFromPath: (path: string) => Promise<string | undefined>,
 ) {
+  // Use the imported Handlebars instead of the passed parameter
+  const handlebarsInstance = Handlebars;
+
   // First, replace filepaths with letters to avoid escaping issues
-  const ast = handlebars.parse(template);
+  const ast = handlebarsInstance.parse(template);
 
   const filepathLetters: Map<string, string> = new Map();
   const requiredContextProviders: Set<string> = new Set();

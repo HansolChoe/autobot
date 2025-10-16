@@ -1,4 +1,7 @@
-import Handlebars from "handlebars";
+import * as HandlebarsImport from "handlebars";
+
+// Handle both default export and namespace export for esbuild compatibility
+const Handlebars = (HandlebarsImport as any).default || HandlebarsImport;
 
 import { CompletionOptions } from "../..";
 import { AutocompleteLanguageInfo } from "../constants/AutocompleteLanguageInfo";
