@@ -9,7 +9,7 @@ This is the Continue project - an open-source AI code agent that works across ID
 - **UI Branding**: Changed from "Continue" to "Autobot"
 - **Internal APIs**: Continue naming preserved for compatibility
 - **Package Names**: @continuedev/\* maintained
-- **Extension ID**: continue maintained
+- **Extension ID**: autobot (UI 브랜딩에 맞춰 변경됨)
 
 ## Setup Commands
 
@@ -53,7 +53,7 @@ This is the Continue project - an open-source AI code agent that works across ID
 
 - Keep "Continue" naming for APIs and core classes
 - Package names: `@continuedev/*` (never change)
-- Extension ID: `continue` (never change)
+- Extension ID: `autobot` (UI 브랜딩에 맞춰 변경됨)
 - Core classes: `ContinueProxy`, `ContinueHubClient` (never change)
 - Core types: `ContinueError`, `ContinueConfig` (never change)
 
@@ -118,6 +118,7 @@ cd extensions/intellij
 - **Image load failures**: Verify file paths and permissions
 - **Type errors**: Ensure TypeScript compilation passes
 - **Migration conflicts**: Follow UI vs Internal code guidelines
+- **Handlebars import errors**: Use fallback pattern for esbuild compatibility
 
 ## File Structure
 
@@ -202,6 +203,69 @@ When adding new default slash commands or modifying existing ones:
 - `core/config/createNewAssistantFile.ts` → Uses YAML prompts for new assistant templates
 - All files import from `prompts.ts` to ensure consistency
 - Changes to `prompts.ts` automatically propagate to all dependent files
+
+## VSIX Build Process
+
+### Prerequisites
+
+- GUI must be built first: `cd gui && npm run build`
+- All dependencies installed: `cd extensions/vscode && npm install`
+
+### Build Commands
+
+```bash
+cd extensions/vscode
+npm run prepackage    # Copy GUI and native modules
+npm run vscode:prepublish  # TypeScript compilation + minification
+npm run package       # Create VSIX file
+```
+
+### Output
+
+- VSIX file: `extensions/vscode/build/autobot-{version}.vsix`
+- Version: 0.0.1 (initial Autobot release)
+- Typical size: ~60-70MB (includes native binaries)
+- Target platform: Auto-detected (win32-x64, darwin-arm64, etc.)
+
+### Common Issues
+
+- **PowerShell compatibility**: Use `cd` then separate commands instead of `&&`
+- **Large file size**: Normal due to onnxruntime, tree-sitter, and other native modules
+- **Build errors**: Ensure GUI is built first and all dependencies are installed
+- **Handlebars.registerHelper is not a function**: Use fallback import pattern for esbuild compatibility
+
+## Handlebars Import Issues
+
+### Problem
+
+When building VSIX packages, you may encounter `Handlebars.registerHelper is not a function` errors. This occurs because esbuild has trouble with CommonJS modules when using ESM default imports.
+
+### Solution
+
+Use the fallback import pattern for all Handlebars imports:
+
+```typescript
+import * as HandlebarsImport from "handlebars";
+// Handle both default export and namespace export for esbuild compatibility
+const Handlebars = (HandlebarsImport as any).default || HandlebarsImport;
+```
+
+### Files That Need This Pattern
+
+- `core/util/handlebars/handlebarUtils.ts`
+- `core/util/handlebars/renderTemplatedString.ts`
+- `core/llm/llms/index.ts`
+- `core/llm/index.ts`
+- `core/nextEdit/templating/NextEditPromptEngine.ts`
+- `core/autocomplete/templating/index.ts`
+- `gui/src/components/mainInput/TipTapEditor/utils/renderPromptv1.ts`
+
+### Why This Works
+
+- Handlebars is a CommonJS module
+- esbuild converts it differently depending on import style
+- The fallback pattern handles both `default` export and namespace export
+- This ensures compatibility regardless of how esbuild processes the module
 
 ## Important Notes
 
