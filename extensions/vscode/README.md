@@ -1,6 +1,6 @@
 <div align="center">
 
-![Continue logo](media/readme.png)
+![Autobot logo](media/readme.png)
 
 <div align="center">
 
@@ -18,7 +18,7 @@
 
 </div>
 
-<h1 align="center">Continue</h1>
+<h1 align="center">Autobot</h1>
 
 <div align="center">
 
@@ -56,4 +56,4 @@
 
 ## License
 
-[Apache 2.0 © 2023-2025 Continue Dev, Inc.](./LICENSE)
+[Apache 2.0 © 2023-2025 ETRI](./LICENSE)
