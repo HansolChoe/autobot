@@ -9,7 +9,7 @@ This is the Continue project - an open-source AI code agent that works across ID
 - **UI Branding**: Changed from "Continue" to "Autobot"
 - **Internal APIs**: Continue naming preserved for compatibility
 - **Package Names**: @continuedev/\* maintained
-- **Extension ID**: autobot (UI 브랜딩에 맞춰 변경됨)
+- **Extension ID**: continue maintained
 
 ## Setup Commands
 
@@ -211,6 +211,23 @@ When adding new default slash commands or modifying existing ones:
 - GUI must be built first: `cd gui && npm run build`
 - All dependencies installed: `cd extensions/vscode && npm install`
 
+### Changing VSIX Version
+
+**VSIX 버전은 `extensions/vscode/package.json`의 `version` 필드만 수정하면 됩니다.**
+
+**중요**: VSIX 버전과 관련 없는 패키지 버전은 변경할 필요가 없습니다:
+- ❌ `binary/package.json` - VSIX와 무관
+- ❌ `core/package.json` - VSIX와 무관 (로컬 의존성)
+- ❌ `extensions/intellij/gradle.properties` - IntelliJ 전용
+- ✅ `extensions/vscode/package.json` - **이것만 수정하면 됨**
+
+VSIX 파일명은 자동으로 `autobot-{version}.vsix` 형식으로 생성됩니다.
+
+```bash
+# extensions/vscode/package.json에서 version 필드 수정
+# 예: "version": "0.0.2"
+```
+
 ### Build Commands
 
 ```bash
@@ -223,7 +240,7 @@ npm run package       # Create VSIX file
 ### Output
 
 - VSIX file: `extensions/vscode/build/autobot-{version}.vsix`
-- Version: 0.0.1 (initial Autobot release)
+- Version: `extensions/vscode/package.json`의 `version` 필드 사용
 - Typical size: ~60-70MB (includes native binaries)
 - Target platform: Auto-detected (win32-x64, darwin-arm64, etc.)
 
