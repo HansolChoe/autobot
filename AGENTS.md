@@ -135,27 +135,27 @@ cd extensions/intellij
 
 The project uses several default configuration files that define the base settings for different agent types:
 
-#### `core/config/default.ts`
+#### `core/config/default.ts` (Legacy)
 
-- **Purpose**: Defines the default configuration for Local Agent
+- **Purpose**: Legacy default configuration for file generation
 - **Type**: `ConfigYaml` interface
-- **Usage**: Used when creating new Local Agent instances
+- **Usage**: Used only when generating default config.yaml files (legacy)
 - **Key Properties**:
   - `name`: "Local Agent"
   - `version`: "1.0.0"
   - `schema`: "v1"
   - `models`: Empty array (user must add models)
-  - `prompts`: Array of default slash commands (includes Python command)
+  - `prompts`: Empty array (legacy file, not used in actual config loading)
 
 #### `core/config/yaml/default.ts`
 
-- **Purpose**: Defines default YAML configuration for different platforms
+- **Purpose**: Defines default YAML configuration for all platforms
 - **Types**: `AssistantUnrolled` interface
 - **Exports**:
-  - `defaultConfigYaml`: Default config for general use
-  - `defaultConfigYamlJetBrains`: Default config for JetBrains IDEs
+  - `defaultConfigYaml`: Default config for all IDEs (VS Code, JetBrains, etc.)
 - **Usage**: Used by the YAML loading system to provide base configurations
 - **Key Properties**: Same as `default.ts` but in YAML-compatible format
+- **Note**: JetBrains-specific differences are handled at runtime in `loadContextProviders.ts` (e.g., filtering out unsupported context providers)
 
 #### `core/config/prompts.ts`
 
@@ -171,7 +171,7 @@ The project uses several default configuration files that define the base settin
 
 ### Default Slash Commands
 
-Both default configuration files include a built-in Python slash command:
+The main YAML configuration (`core/config/yaml/default.ts`) includes a built-in Python slash command:
 
 ```yaml
 prompts:
@@ -189,19 +189,19 @@ When adding new default slash commands or modifying existing ones:
 
 1. **Update prompts.ts first**: Add new commands to `core/config/prompts.ts` with both TypeScript and YAML formats
 2. **Update all config files**: Import and use the new prompts in:
-   - `core/config/default.ts`
-   - `core/config/yaml/default.ts` (both `defaultConfigYaml` and `defaultConfigYamlJetBrains`)
-   - `core/config/createNewAssistantFile.ts`
+   - `core/config/yaml/default.ts` - **Main system**
+   - `core/config/createNewAssistantFile.ts` - **New assistant templates**
+   - ⚠️ `core/config/default.ts` - **Legacy file, prompts not used** (only used for file generation)
 3. **Test thoroughly**: Ensure changes work across all supported IDEs
 4. **Maintain consistency**: All files should import from `prompts.ts` to ensure consistency
 
 ### File Relationships
 
 - `core/config/prompts.ts` → **Central source** for all prompt definitions
-- `core/config/default.ts` → Uses prompts from `prompts.ts` for Local Agent
-- `core/config/yaml/default.ts` → Uses prompts from `prompts.ts` for YAML system
+- `core/config/yaml/default.ts` → **Main system** - Uses prompts from `prompts.ts` for YAML loading
 - `core/config/createNewAssistantFile.ts` → Uses YAML prompts for new assistant templates
-- All files import from `prompts.ts` to ensure consistency
+- `core/config/default.ts` → **Legacy** - Only used for file generation, prompts not included
+- All active files import from `prompts.ts` to ensure consistency
 - Changes to `prompts.ts` automatically propagate to all dependent files
 
 ## VSIX Build Process
@@ -216,6 +216,7 @@ When adding new default slash commands or modifying existing ones:
 **VSIX 버전은 `extensions/vscode/package.json`의 `version` 필드만 수정하면 됩니다.**
 
 **중요**: VSIX 버전과 관련 없는 패키지 버전은 변경할 필요가 없습니다:
+
 - ❌ `binary/package.json` - VSIX와 무관
 - ❌ `core/package.json` - VSIX와 무관 (로컬 의존성)
 - ❌ `extensions/intellij/gradle.properties` - IntelliJ 전용
