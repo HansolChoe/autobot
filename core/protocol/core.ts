@@ -121,6 +121,7 @@ export type ToCoreFromIdeOrWebviewProtocol = {
     { profileId: string | undefined; element?: { sourceFile?: string } },
     void,
   ];
+  "config/resetConfig": [undefined, { success: boolean; deletedFiles: string[]; checkedPaths: { yaml: string; json: string } }];
   "config/updateSharedConfig": [SharedConfigSchema, SharedConfigSchema];
   "config/updateSelectedModel": [
     {

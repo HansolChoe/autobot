@@ -1,14 +1,24 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Sample CloudFormation template
 
-Resources:
-  S3Bucket:
-    Type: "AWS::S3::Bucket"
-    Properties:
-      BucketName: my-sample-bucket
 
-  EC2Instance:
-    Type: "AWS::EC2::Instance"
-    Properties:
-      InstanceType: "t2.micro"
-      ImageId: "ami-0abcdef12345abcdef"
+
+
+
+
+
+
+
+
+
+
+
+- The **first document** is a CloudFormation template (for deploying AWS resources).
+- The **second document** is a model/prompt configuration used (possibly) for an LLM agent (nothing to do with CloudFormation).
+
+If you want to **apply the edit to the previous code** as requested, you must clarify:
+- Do you want the new config added as a separate section in the YAML file?
+- Are you trying to "merge" these, or list them in one file for documentation?
+- These sections cannot be interpreted by AWS CloudFormation or model configs if in the same YAML unless clearly split.
+
+**Assuming you want to put both in the same file for documentation/reference (NOT for use as-is in AWS or an LLM tool),** you could use YAML's multi-document feature (i.e., `---` separator):
+

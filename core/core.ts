@@ -1,15 +1,17 @@
 import { fetchwithRequestOptions } from "@continuedev/fetch";
+import * as fs from "fs";
 import * as URI from "uri-js";
 import { v4 as uuidv4 } from "uuid";
 
 import { CompletionProvider } from "./autocomplete/CompletionProvider";
 import {
-    openedFilesLruCache,
-    prevFilepaths,
+  openedFilesLruCache,
+  prevFilepaths,
 } from "./autocomplete/util/openedFilesLruCache";
 import { ConfigHandler } from "./config/ConfigHandler";
 import { SYSTEM_PROMPT_DOT_FILE } from "./config/getWorkspaceContinueRuleDotFiles";
 import { addModel, deleteModel } from "./config/util";
+import { defaultConfigYaml } from "./config/yaml/default";
 import { getAuthUrlForTokenPage } from "./control-plane/auth/index";
 import { getControlPlaneEnv } from "./control-plane/env";
 import { DevDataSqliteDb } from "./data/devdataSqlite";
@@ -26,27 +28,32 @@ import { ChatDescriber } from "./util/chatDescriber";
 import { compactConversation } from "./util/conversationCompaction";
 import { GlobalContext } from "./util/GlobalContext";
 import historyManager from "./util/history";
-import { editConfigFile, migrateV1DevDataFiles } from "./util/paths";
+import {
+  editConfigFile,
+  getConfigJsonPath,
+  getConfigYamlPath,
+  migrateV1DevDataFiles,
+} from "./util/paths";
 import { Telemetry } from "./util/posthog";
 import {
-    isProcessBackgrounded,
-    killTerminalProcess,
-    markProcessAsBackgrounded,
+  isProcessBackgrounded,
+  killTerminalProcess,
+  markProcessAsBackgrounded,
 } from "./util/processTerminalStates";
 import { getSymbolsForManyFiles } from "./util/treeSitter";
 import { TTS } from "./util/tts";
 
 import {
-    CompleteOnboardingPayload,
-    ContextItemId,
-    ContextItemWithId,
-    IdeSettings,
-    ModelDescription,
-    Position,
-    RangeInFile,
-    ToolCall,
-    type ContextItem,
-    type IDE,
+  CompleteOnboardingPayload,
+  ContextItemId,
+  ContextItemWithId,
+  IdeSettings,
+  ModelDescription,
+  Position,
+  RangeInFile,
+  ToolCall,
+  type ContextItem,
+  type IDE,
 } from ".";
 
 import { BLOCK_TYPES, ConfigYaml } from "@continuedev/config-yaml";
@@ -56,9 +63,9 @@ import { createNewAssistantFile } from "./config/createNewAssistantFile";
 import { isLocalDefinitionFile } from "./config/loadLocalAssistants";
 import { CodebaseRulesCache } from "./config/markdown/loadCodebaseRules";
 import {
-    setupLocalConfig,
-    setupProviderConfig,
-    setupQuickstartConfig,
+  setupLocalConfig,
+  setupProviderConfig,
+  setupQuickstartConfig,
 } from "./config/onboarding";
 import { createNewWorkspaceBlockFile } from "./config/workspace/workspaceBlocks";
 import { MCPManagerSingleton } from "./context/mcp/MCPManagerSingleton";
@@ -416,6 +423,198 @@ export class Core {
         msg.data.profileId,
         msg.data?.element,
       );
+    });
+
+    on("config/resetConfig", async () => {
+      Logger.info(`[Config Reset] Handler called`);
+      try {
+        Logger.info(`[Config Reset] Getting IDE info...`);
+        const ideInfo = await this.ide.getIdeInfo();
+        Logger.info(
+          `[Config Reset] IDE info retrieved: ${JSON.stringify(ideInfo)}`,
+        );
+
+        // Get current profile's config file path (the one that opens when clicking gear icon)
+        const currentProfileUri =
+          this.configHandler.currentProfile?.profileDescription.uri;
+        const configYamlPath = getConfigYamlPath(ideInfo.ideType);
+        const configJsonPath = getConfigJsonPath();
+
+        Logger.info(`[Config Reset] Starting reset process`);
+        Logger.info(`[Config Reset] Current profile URI: ${currentProfileUri}`);
+        Logger.info(`[Config Reset] Config YAML path: ${configYamlPath}`);
+        Logger.info(`[Config Reset] Config JSON path: ${configJsonPath}`);
+
+        // Use current profile URI if it's a local profile, otherwise use default paths
+        const { localPathOrUriToPath } = await import("./util/pathToUri");
+        let filesToDelete: string[] = [];
+
+        if (
+          currentProfileUri &&
+          this.configHandler.currentProfile?.profileDescription.profileType ===
+            "local"
+        ) {
+          // Convert URI to local path (this is the file that opens when clicking gear icon)
+          const profileConfigPath = localPathOrUriToPath(currentProfileUri);
+          Logger.info(
+            `[Config Reset] Profile config path: ${profileConfigPath}, exists: ${fs.existsSync(profileConfigPath)}`,
+          );
+          if (fs.existsSync(profileConfigPath)) {
+            filesToDelete.push(profileConfigPath);
+          }
+        }
+
+        // Also check default config paths
+        Logger.info(
+          `[Config Reset] Default YAML path exists: ${fs.existsSync(configYamlPath)}`,
+        );
+        if (
+          fs.existsSync(configYamlPath) &&
+          !filesToDelete.includes(configYamlPath)
+        ) {
+          filesToDelete.push(configYamlPath);
+        }
+        Logger.info(
+          `[Config Reset] Default JSON path exists: ${fs.existsSync(configJsonPath)}`,
+        );
+        if (
+          fs.existsSync(configJsonPath) &&
+          !filesToDelete.includes(configJsonPath)
+        ) {
+          filesToDelete.push(configJsonPath);
+        }
+
+        const checkedPaths = {
+          yaml:
+            currentProfileUri &&
+            this.configHandler.currentProfile?.profileDescription
+              .profileType === "local"
+              ? localPathOrUriToPath(currentProfileUri)
+              : configYamlPath,
+          json: configJsonPath,
+        };
+
+        Logger.info(
+          `[Config Reset] Files to delete: ${filesToDelete.length} file(s)`,
+        );
+        filesToDelete.forEach((path) => {
+          Logger.info(`[Config Reset]   - ${path}`);
+        });
+
+        let deletedFiles: string[] = [];
+
+        // Delete all found config files
+        for (const filePath of filesToDelete) {
+          try {
+            if (fs.existsSync(filePath)) {
+              fs.unlinkSync(filePath);
+              deletedFiles.push(filePath);
+              Logger.info(`[Config Reset] Successfully deleted: ${filePath}`);
+            } else {
+              Logger.warn(
+                `[Config Reset] File not found (may have been deleted already): ${filePath}`,
+              );
+            }
+          } catch (error) {
+            const errorMsg =
+              error instanceof Error ? error.message : String(error);
+            Logger.error(
+              `[Config Reset] Failed to delete config file at ${filePath}: ${errorMsg}`,
+            );
+            await this.ide.showToast(
+              "error",
+              `Failed to delete config file: ${errorMsg}`,
+            );
+            return {
+              success: false,
+              deletedFiles,
+              checkedPaths,
+            };
+          }
+        }
+
+        Logger.info(
+          `[Config Reset] Deleted ${deletedFiles.length} file(s) successfully`,
+        );
+
+        if (deletedFiles.length === 0) {
+          Logger.info(
+            `[Config Reset] No files deleted. Checked paths: YAML=${checkedPaths.yaml}, JSON=${checkedPaths.json}`,
+          );
+          await this.ide.showToast("info", `No config files found to delete.`);
+          // Still reload to ensure default config is created
+          await this.configHandler.reloadConfig(
+            "Config reset (config/resetConfig message)",
+          );
+          return {
+            success: true,
+            deletedFiles: [],
+            checkedPaths,
+          };
+        }
+
+        // Create default config file with prompts included
+        Logger.info(`[Config Reset] Creating default config with prompts`);
+        const YAML = await import("yaml");
+        const targetConfigPath =
+          currentProfileUri &&
+          this.configHandler.currentProfile?.profileDescription.profileType ===
+            "local"
+            ? localPathOrUriToPath(currentProfileUri)
+            : configYamlPath;
+
+        // Ensure directory exists
+        const path = await import("path");
+        const configDir = path.dirname(targetConfigPath);
+        if (!fs.existsSync(configDir)) {
+          fs.mkdirSync(configDir, { recursive: true });
+        }
+
+        // Write default config with prompts
+        fs.writeFileSync(targetConfigPath, YAML.stringify(defaultConfigYaml));
+        Logger.info(
+          `[Config Reset] Created default config at: ${targetConfigPath}`,
+        );
+
+        // Reload config to load the newly created default config
+        Logger.info(`[Config Reset] Reloading config to load defaults`);
+        await this.configHandler.reloadConfig(
+          "Config reset (config/resetConfig message)",
+        );
+
+        // Show success message with file count
+        await this.ide.showToast(
+          "info",
+          `Configuration reset successfully. Deleted ${deletedFiles.length} file(s).`,
+        );
+        Logger.info(
+          `[Config Reset] Reset successful. Deleted files: ${deletedFiles.join(", ")}`,
+        );
+
+        return {
+          success: true,
+          deletedFiles,
+          checkedPaths,
+        };
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        Logger.error(`[Config Reset] Unexpected error: ${errorMsg}`);
+        if (error instanceof Error) {
+          Logger.error(error);
+        }
+        await this.ide.showToast(
+          "error",
+          `Failed to reset configuration: ${errorMsg}`,
+        );
+        return {
+          success: false,
+          deletedFiles: [],
+          checkedPaths: {
+            yaml: "",
+            json: "",
+          },
+        };
+      }
     });
 
     on("config/ideSettingsUpdate", async (msg) => {

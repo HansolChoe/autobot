@@ -17,6 +17,7 @@ export enum BuiltInToolNames {
   FetchUrlContent = "fetch_url_content",
   CodebaseTool = "codebase",
   PythonCodeGen = "python_code_gen",
+  AutoFL = "autofl",
 
   // excluded from allTools for now
   ViewRepoMap = "view_repo_map",

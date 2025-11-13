@@ -123,11 +123,14 @@ cd extensions/intellij
 ## File Structure
 
 - `core/` - Core functionality and APIs
+  - `core/tools/implementations/autofl/` - AutoFL bug localization tool implementation
+  - `core/tools/implementations/autoflTool.ts` - AutoFL tool integration
 - `gui/` - Web-based user interface
 - `extensions/vscode/` - VS Code extension
 - `extensions/intellij/` - IntelliJ extension
 - `binary/` - Binary distribution
 - `packages/` - Shared packages
+- `autofl_python/` - Original Python implementation reference (for reference only, not used in production)
 
 ## Default Configuration Files
 
@@ -154,7 +157,12 @@ The project uses several default configuration files that define the base settin
 - **Exports**:
   - `defaultConfigYaml`: Default config for all IDEs (VS Code, JetBrains, etc.)
 - **Usage**: Used by the YAML loading system to provide base configurations
-- **Key Properties**: Same as `default.ts` but in YAML-compatible format
+- **Key Properties**:
+  - `name`: "Local Agent"
+  - `version`: "1.0.0"
+  - `schema`: "v1"
+  - `models`: Empty array (user must add models)
+  - `prompts`: Array of default slash commands (includes Python command)
 - **Note**: JetBrains-specific differences are handled at runtime in `loadContextProviders.ts` (e.g., filtering out unsupported context providers)
 
 #### `core/config/prompts.ts`
@@ -162,7 +170,8 @@ The project uses several default configuration files that define the base settin
 - **Purpose**: Centralized definition of common slash commands and prompts
 - **Exports**:
   - `PYTHON_SLASH_COMMAND`: TypeScript object format for programmatic use
-  - `PYTHON_SLASH_COMMAND_YAML`: YAML string format for template files
+  - `AUTOFL_SLASH_COMMAND`: AutoFL bug localization slash command
+  - `KAIST_AUTO_DEBUG_SLASH_COMMAND`: Auto debug slash command
 - **Usage**: Imported by all configuration files to ensure consistency
 - **Benefits**:
   - Eliminates code duplication
@@ -171,7 +180,9 @@ The project uses several default configuration files that define the base settin
 
 ### Default Slash Commands
 
-The main YAML configuration (`core/config/yaml/default.ts`) includes a built-in Python slash command:
+The default YAML configuration (`core/config/yaml/default.ts`) includes built-in slash commands:
+
+#### Python Command
 
 ```yaml
 prompts:
@@ -180,8 +191,25 @@ prompts:
     prompt: |
       {{{ input }}}
 
-      For Python code generation, you MUST use the python_code_gen tool to generate complete, runnable Python code. CRITICAL: Do not modify, change, or rewrite the generated code in any way. Use the generated code exactly as it is - copy and apply it directly without any modifications. Do not add comments, change variable names, alter the structure, remove comments, modify docstrings, or delete test code. The generated code must be used as-is including all comments, docstrings, and test cases.
+      Please use the python_code_gen tool to generate the Python code. Use the generated code exactly as-is without any modifications.
 ```
+
+#### AutoFL Command
+
+```yaml
+prompts:
+  - name: autofl
+    description: Analyze failing tests and locate bugs using autofl tool (AutoFL Bug Localization)
+    prompt: |
+      {{{ input }}}
+
+      Analyze my request and use the autofl tool to locate bugs. The autofl tool requires:
+      - repo_path: Project root path (prefer absolute path)
+      - test_command: Command to run tests (e.g., "pytest", "npm test", "mvn test")
+      Optional: language, bug_name, max_budget
+```
+
+These commands are also included when creating new assistant files via `createNewAssistantFile.ts`.
 
 ### Modifying Default Configurations
 
@@ -189,8 +217,8 @@ When adding new default slash commands or modifying existing ones:
 
 1. **Update prompts.ts first**: Add new commands to `core/config/prompts.ts` with both TypeScript and YAML formats
 2. **Update all config files**: Import and use the new prompts in:
-   - `core/config/yaml/default.ts` - **Main system**
-   - `core/config/createNewAssistantFile.ts` - **New assistant templates**
+   - `core/config/yaml/default.ts` - **Main system** (TypeScript object format)
+   - `core/config/createNewAssistantFile.ts` - **New assistant templates** (YAML format)
    - ⚠️ `core/config/default.ts` - **Legacy file, prompts not used** (only used for file generation)
 3. **Test thoroughly**: Ensure changes work across all supported IDEs
 4. **Maintain consistency**: All files should import from `prompts.ts` to ensure consistency
@@ -284,6 +312,22 @@ const Handlebars = (HandlebarsImport as any).default || HandlebarsImport;
 - esbuild converts it differently depending on import style
 - The fallback pattern handles both `default` export and namespace export
 - This ensures compatibility regardless of how esbuild processes the module
+
+## Built-in Tools
+
+### AutoFL (Automated Fault Localization)
+
+- **Tool Name**: `autofl`
+- **Purpose**: Analyzes failing tests using LLM to predict buggy method locations
+- **Location**: `core/tools/implementations/autofl/`
+- **Integration**: Registered in `core/tools/builtIn.ts` and `core/tools/index.ts`
+- **Parameters**:
+  - `repo_path` (required): Repository root directory path
+  - `test_command` (required): Command to run tests (e.g., "pytest", "npm test")
+  - `language` (optional): "auto", "java", or "python" (default: "auto")
+  - `bug_name` (optional): Project identifier (default: "project")
+  - `max_budget` (optional): Maximum LLM API calls (default: 10)
+- **Usage**: Available as slash command `/autofl` or as a tool call by agents
 
 ## Important Notes
 

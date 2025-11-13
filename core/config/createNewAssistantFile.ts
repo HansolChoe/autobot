@@ -1,6 +1,17 @@
+import * as YAML from "yaml";
 import { IDE } from "..";
 import { joinPathsToUri } from "../util/uri";
-import { PYTHON_SLASH_COMMAND_YAML } from "./prompts";
+import { AUTOFL_SLASH_COMMAND, PYTHON_SLASH_COMMAND } from "./prompts";
+
+/**
+ * Indents a multi-line string by adding the specified indentation to each line
+ */
+function indentString(str: string, indent: string): string {
+  return str
+    .split("\n")
+    .map((line) => (line.trim() === "" ? line : `${indent}${line}`))
+    .join("\n");
+}
 
 const DEFAULT_ASSISTANT_FILE = `# This is an example agent configuration file
 # It is used to define custom AI agents within Continue
@@ -15,14 +26,10 @@ schema: v1
 # Models define which AI models this agent can use
 # https://docs.continue.dev/customization/models
 models:
-  - name: my gpt-5
+  - name: openai
     provider: openai
-    model: gpt-5
+    model: gpt-4.1
     apiKey: YOUR_OPENAI_API_KEY_HERE
-  - uses: ollama/qwen2.5-coder-7b
-  - uses: anthropic/claude-4-sonnet
-    with:
-      ANTHROPIC_API_KEY: \${{ secrets.ANTHROPIC_API_KEY }}
 
 # MCP Servers the agent can use
 # https://docs.continue.dev/customization/mcp-tools
@@ -32,7 +39,10 @@ mcpServers:
 # Slash commands for this agent
 # https://docs.continue.dev/customization/slash-commands
 prompts:
-${PYTHON_SLASH_COMMAND_YAML}
+${indentString(
+  YAML.stringify([PYTHON_SLASH_COMMAND, AUTOFL_SLASH_COMMAND]),
+  "  ",
+)}
 `;
 
 export async function createNewAssistantFile(

@@ -5,6 +5,7 @@ import {
   ToolCallState,
   ToolStatus,
 } from "core";
+import { BuiltInToolNames } from "core/tools/builtIn";
 import { ComponentType, SVGProps } from "react";
 import { vscButtonBackground } from "../../../components";
 import Spinner from "../../../components/gui/Spinner";
@@ -88,10 +89,24 @@ export function toolCallStateToContextItems(
   if (!toolCallState) {
     return [];
   }
-  return (
-    toolCallState.output?.map((ctxItem) =>
-      toolCallCtxItemToCtxItemWithId(ctxItem, toolCallState.toolCallId),
-    ) ?? []
+  
+  // For AutoFL tool, filter out final result items (those with content and name "AutoFL Analysis")
+  // to show only intermediate status messages in SimpleToolCallUI
+  const isAutoFLTool =
+    toolCallState.toolCall?.function?.name === BuiltInToolNames.AutoFL;
+  
+  const filteredOutput = isAutoFLTool
+    ? toolCallState.output?.filter(
+        (item) =>
+          // Keep status items (empty content) or exclude final result
+          !item.content ||
+          item.content.trim() === "" ||
+          item.name !== "AutoFL Analysis",
+      ) ?? []
+    : toolCallState.output ?? [];
+  
+  return filteredOutput.map((ctxItem) =>
+    toolCallCtxItemToCtxItemWithId(ctxItem, toolCallState.toolCallId),
   );
 }
 

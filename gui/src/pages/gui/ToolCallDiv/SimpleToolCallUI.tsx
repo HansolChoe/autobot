@@ -1,5 +1,5 @@
 import { Tool, ToolCallState } from "core";
-import { ComponentType, useContext, useMemo, useState } from "react";
+import { ComponentType, useContext, useEffect, useMemo, useState } from "react";
 import {
   ContextItemsPeekItem,
   openContextItem,
@@ -26,13 +26,25 @@ export function SimpleToolCallUI({
   const shownContextItems = useMemo(() => {
     const contextItems = toolCallStateToContextItems(toolCallState);
     return contextItems.filter((item) => !item.hidden);
-  }, [toolCallState]);
+  }, [toolCallState, toolCallState.output]);
 
-  const [open, setOpen] = useState(false);
+  // Auto-open when tool is calling and has output (for streaming updates)
+  const isCallingWithOutput =
+    toolCallState.status === "calling" && shownContextItems.length > 0;
+  const [open, setOpen] = useState(isCallingWithOutput);
+
+  // Auto-open when calling with output changes
+  useEffect(() => {
+    if (isCallingWithOutput) {
+      setOpen(true);
+    }
+  }, [isCallingWithOutput]);
 
   const isToggleable = shownContextItems.length > 1;
   const isSingleItem = shownContextItems.length === 1;
-  const shouldShowContent = isToggleable ? open : false;
+  // Show content if: calling with output (auto-display), or toggleable and open, or single item and open
+  const shouldShowContent =
+    isCallingWithOutput || (isToggleable ? open : isSingleItem && open);
   const isClickable = isToggleable || isSingleItem;
 
   function handleClick() {
@@ -63,16 +75,25 @@ export function SimpleToolCallUI({
         </div>
       </div>
 
-      {isToggleable && (
+      {(isToggleable || isCallingWithOutput || isSingleItem) && (
         <div
           className={`mt-2 overflow-y-auto transition-all duration-300 ease-in-out ${
             shouldShowContent ? "max-h-[50vh] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
           {shownContextItems.length > 0 ? (
-            shownContextItems.map((contextItem, idx) => (
-              <ContextItemsPeekItem key={idx} contextItem={contextItem} />
-            ))
+            shownContextItems.map((contextItem, idx) => {
+              // For status items with empty content, make them non-clickable
+              const isStatusItem = !contextItem.content || contextItem.content.trim() === "";
+              return (
+                <div
+                  key={idx}
+                  className={isStatusItem ? "pointer-events-none" : ""}
+                >
+                  <ContextItemsPeekItem contextItem={contextItem} />
+                </div>
+              );
+            })
           ) : (
             <div className="text-description pl-5 text-xs italic">
               No tool call output

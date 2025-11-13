@@ -26,6 +26,7 @@ export const WEBVIEW_TO_CORE_PASS_THROUGH: (keyof ToCoreFromWebviewProtocol)[] =
     "config/deleteModel",
     "config/refreshProfiles",
     "config/openProfile",
+    "config/resetConfig",
     "config/updateSharedConfig",
     "config/updateSelectedModel",
     "mcp/reloadServer",

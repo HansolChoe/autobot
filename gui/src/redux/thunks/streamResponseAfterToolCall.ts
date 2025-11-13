@@ -1,5 +1,6 @@
 import { createAsyncThunk, unwrapResult } from "@reduxjs/toolkit";
 import { ChatMessage } from "core";
+import { BuiltInToolNames } from "core/tools/builtIn";
 import { renderContextItems } from "core/util/messageContent";
 import {
   ChatHistoryItemWithMessageId,
@@ -54,7 +55,21 @@ export const streamResponseAfterToolCall = createAsyncThunk<
           return; // in cases where edit tool is cancelled mid apply, this will be triggered
         }
 
-        const toolOutput = toolCallState.output ?? [];
+        // For AutoFL tool, use only final result (items with content and name "AutoFL Analysis")
+        // For other tools, use all output
+        const isAutoFLTool =
+          toolCallState.toolCall?.function?.name === BuiltInToolNames.AutoFL;
+
+        let toolOutput = toolCallState.output ?? [];
+        if (isAutoFLTool) {
+          // Filter to get only final result for tool message
+          toolOutput = toolCallState.output?.filter(
+            (item) =>
+              item.content &&
+              item.content.trim() !== "" &&
+              item.name === "AutoFL Analysis",
+          ) ?? [];
+        }
 
         dispatch(resetNextCodeBlockToApplyIndex());
         // await new Promise((resolve) => setTimeout(resolve, 0));

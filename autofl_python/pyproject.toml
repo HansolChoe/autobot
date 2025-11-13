@@ -1,0 +1,28 @@
+[project]
+name = "autofl"
+version = "0.1.0"
+description = "LLM-based Explainable Fault Localization Tool"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas",
+    "python-dotenv",
+    "tqdm",
+    "markdown2",
+    "tiktoken",
+    "openai>=1.0.0",
+    "javalang-ext",
+    "scipy",
+    "numpy",
+    "matplotlib",
+    "jupyter",
+    "seaborn",
+    "nbformat",
+]
+
+[project.optional-dependencies]
+dev = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+

@@ -1,16 +1,19 @@
 import {
-    SharedConfigSchema,
-    modifyAnyConfigWithSharedConfig,
+  SharedConfigSchema,
+  modifyAnyConfigWithSharedConfig,
 } from "core/config/sharedConfig";
 import { HubSessionInfo } from "core/control-plane/AuthTypes";
 import { isContinueTeamMember } from "core/util/isContinueTeamMember";
 import { useContext, useEffect, useState } from "react";
+import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
 import { Card, Toggle, useFontSize } from "../../../components/ui";
+import { Button } from "../../../components/ui/Button";
 import { useAuth } from "../../../context/Auth";
 import { IdeMessengerContext } from "../../../context/IdeMessenger";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { updateConfig } from "../../../redux/slices/configSlice";
 import { selectCurrentOrg } from "../../../redux/slices/profilesSlice";
+import { setDialogMessage, setShowDialog } from "../../../redux/slices/uiSlice";
 import { setLocalStorage } from "../../../util/localStorage";
 import { AutobotFeaturesMenu } from "../components/AutobotFeaturesMenu";
 import { ConfigHeader } from "../components/ConfigHeader";
@@ -344,6 +347,126 @@ export function UserSettingsSection() {
                   )}
                 </div>
               </Toggle>
+            </Card>
+          </div>
+
+          {/* Configuration Management */}
+          <div>
+            <ConfigHeader title="Configuration" variant="sm" />
+            <Card>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                  <div className="font-medium">Reset Configuration</div>
+                  <div className="text-description text-sm">
+                    Delete your config.yaml and config.json files and reset to
+                    default configuration. This action cannot be undone.
+                  </div>
+                  <Button
+                    onClick={() => {
+                      dispatch(setShowDialog(true));
+                      dispatch(
+                        setDialogMessage(
+                          <ConfirmationDialog
+                            title="Reset Configuration"
+                            text={`This will delete your config.yaml and config.json files and reset to default configuration. This action cannot be undone.
+
+Are you sure you want to continue?`}
+                            confirmText="Reset"
+                            onConfirm={async () => {
+                              try {
+                                console.log("[Config Reset] Starting reset...");
+                                console.log(
+                                  "[Config Reset] Sending request to core...",
+                                );
+
+                                const requestPromise = ideMessenger.request(
+                                  "config/resetConfig",
+                                  undefined,
+                                );
+
+                                // Add timeout to detect if request hangs
+                                const timeoutPromise = new Promise(
+                                  (_, reject) => {
+                                    setTimeout(() => {
+                                      reject(
+                                        new Error(
+                                          "Request timeout after 30 seconds",
+                                        ),
+                                      );
+                                    }, 30000);
+                                  },
+                                );
+
+                                const result = (await Promise.race([
+                                  requestPromise,
+                                  timeoutPromise,
+                                ])) as any;
+
+                                console.log(
+                                  "[Config Reset] Request completed, result:",
+                                  result,
+                                );
+
+                                // Always close dialog after request completes
+                                dispatch(setShowDialog(false));
+                                dispatch(setDialogMessage(undefined));
+
+                                if (result) {
+                                  console.log("[Config Reset] Result:", result);
+                                  if (result.success) {
+                                    if (
+                                      result.deletedFiles &&
+                                      result.deletedFiles.length > 0
+                                    ) {
+                                      console.log(
+                                        "[Config Reset] Successfully deleted files:",
+                                        result.deletedFiles,
+                                      );
+                                    } else {
+                                      console.log(
+                                        "[Config Reset] No files deleted. Checked paths:",
+                                        result.checkedPaths,
+                                      );
+                                    }
+                                  } else {
+                                    console.error(
+                                      "[Config Reset] Reset failed:",
+                                      result,
+                                    );
+                                  }
+                                } else {
+                                  console.warn(
+                                    "[Config Reset] No result returned from handler",
+                                  );
+                                }
+                              } catch (error) {
+                                // Close dialog even on error
+                                dispatch(setShowDialog(false));
+                                dispatch(setDialogMessage(undefined));
+                                console.error("[Config Reset] Error:", error);
+                                if (error instanceof Error) {
+                                  console.error(
+                                    "[Config Reset] Error message:",
+                                    error.message,
+                                  );
+                                  console.error(
+                                    "[Config Reset] Error stack:",
+                                    error.stack,
+                                  );
+                                }
+                              }
+                            }}
+                          />,
+                        ),
+                      );
+                    }}
+                    variant="outline"
+                    className="border-red-500 text-red-500 hover:bg-red-500/10"
+                  >
+                    Reset Configuration
+                  </Button>
+                </div>
+              </div>
             </Card>
           </div>
         </div>

@@ -1132,6 +1132,19 @@ export const models: { [key: string]: ModelPackage } = {
     icon: "openai.png",
     isOpenSource: false,
   },
+  gpt51: {
+    title: "GPT-5.1",
+    description:
+      "OpenAI's enhanced version of GPT-5 with improved capabilities",
+    params: {
+      model: "gpt-5.1",
+      contextLength: 400_000,
+      title: "GPT-5.1",
+    },
+    providerOptions: ["openai"],
+    icon: "openai.png",
+    isOpenSource: false,
+  },
   gpt4turbo: {
     title: "GPT-4 Turbo",
     description:
@@ -1155,6 +1168,19 @@ export const models: { [key: string]: ModelPackage } = {
       title: "GPT-4o",
     },
     providerOptions: ["openai", "askSage"],
+    icon: "openai.png",
+    isOpenSource: false,
+  },
+  gpt41: {
+    title: "GPT-4.1",
+    description:
+      "An enhanced version of GPT-4o with improved performance and capabilities.",
+    params: {
+      model: "gpt-4.1",
+      contextLength: 128_000,
+      title: "GPT-4.1",
+    },
+    providerOptions: ["openai"],
     icon: "openai.png",
     isOpenSource: false,
   },

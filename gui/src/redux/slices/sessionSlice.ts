@@ -9,6 +9,7 @@ import { JSONContent } from "@tiptap/react";
 import {
   ApplyState,
   AssistantChatMessage,
+  BaseSessionMetadata,
   ChatHistoryItem,
   ChatMessage,
   ContextItem,
@@ -18,7 +19,6 @@ import {
   PromptLog,
   RuleWithSource,
   Session,
-  BaseSessionMetadata,
   ThinkingChatMessage,
   Tool,
   ToolCallDelta,
@@ -833,20 +833,96 @@ export const sessionSlice = createSlice({
         state.history,
         action.payload.toolCallId,
       );
-      if (toolCallState) {
-        toolCallState.output = action.payload.contextItems;
+
+      if (!toolCallState) {
+        return;
       }
-      const toolItem = findChatHistoryItemByToolCallId(
-        state.history,
-        action.payload.toolCallId,
+
+      // Check if this is AutoFL tool
+      const isAutoFLTool =
+        toolCallState.toolCall?.function?.name === BuiltInToolNames.AutoFL;
+
+      // Check if this is the final result (has content and name "AutoFL Analysis" for AutoFL)
+      const isFinalResult = action.payload.contextItems.some(
+        (item) =>
+          item.content &&
+          item.content.trim() !== "" &&
+          (isAutoFLTool ? item.name === "AutoFL Analysis" : true),
       );
-      if (toolItem) {
-        toolItem.message.content = renderContextItems(
-          action.payload.contextItems,
+
+      // Check if this is an intermediate update (tool is still calling and not final result)
+      const isIntermediateUpdate =
+        toolCallState.status === "calling" && !isFinalResult;
+
+      if (isIntermediateUpdate) {
+        // For intermediate updates, add each status as a separate contextItem
+        // Replace the entire output with the new list to show all statuses
+        toolCallState.output = [...action.payload.contextItems];
+      } else {
+        // Tool call completed
+        if (isAutoFLTool) {
+          // For AutoFL, keep intermediate status messages and add final result
+          // Final result needs to be in toolCallState.output for agent to receive it
+          const existingStatusItems =
+            toolCallState.output?.filter(
+              (item) => !item.content || item.content.trim() === "",
+            ) || [];
+
+          // Check if this is the final result (has content) or a completion status message
+          const hasContentItem = action.payload.contextItems.some(
+            (item) => item.content && item.content.trim() !== "",
+          );
+
+          if (hasContentItem) {
+            // This is the final result
+            // Find the final result item (AutoFL Analysis) to get its content
+            const finalResultItem = action.payload.contextItems.find(
+              (item) =>
+                item.content &&
+                item.content.trim() !== "" &&
+                item.name === "AutoFL Analysis",
+            );
+
+            // Keep status items, add completion message with final result content, and include final result for agent
+            const completionMessage = {
+              name: "분석 완료",
+              description: "",
+              content: finalResultItem?.content || "", // Store final result content so it can be clicked
+            };
+            // Include final result in output so agent receives it
+            toolCallState.output = [
+              ...existingStatusItems,
+              completionMessage,
+              ...action.payload.contextItems, // Final result for agent
+            ];
+          } else {
+            // This is a completion status message, add it to status items
+            toolCallState.output = [
+              ...existingStatusItems,
+              ...action.payload.contextItems,
+            ];
+          }
+        } else {
+          // For other tools, update toolCallState.output with final result as usual
+          toolCallState.output = action.payload.contextItems;
+        }
+
+        const toolItem = findChatHistoryItemByToolCallId(
+          state.history,
+          action.payload.toolCallId,
         );
-        toolItem.contextItems = action.payload.contextItems.map((item) =>
-          toolCallCtxItemToCtxItemWithId(item, action.payload.toolCallId),
-        );
+
+        if (toolItem) {
+          // Update existing tool message with final result
+          const renderedContent = renderContextItems(
+            action.payload.contextItems,
+          );
+          toolItem.message.content = renderedContent;
+          toolItem.contextItems = action.payload.contextItems.map((item) =>
+            toolCallCtxItemToCtxItemWithId(item, action.payload.toolCallId),
+          );
+        }
+        // If tool message doesn't exist, it will be created by streamResponseAfterToolCall
       }
     },
     setToolCallArgs: (
