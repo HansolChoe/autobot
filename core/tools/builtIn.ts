@@ -18,6 +18,7 @@ export enum BuiltInToolNames {
   CodebaseTool = "codebase",
   PythonCodeGen = "python_code_gen",
   AutoFL = "autofl",
+  AutoDebug = "auto_debug",
 
   // excluded from allTools for now
   ViewRepoMap = "view_repo_map",

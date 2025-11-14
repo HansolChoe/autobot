@@ -3,6 +3,7 @@ import { isRecommendedAgentModel } from "../llm/toolSupport";
 import * as toolDefinitions from "./definitions";
 import { pythonCodeGenTool } from "./implementations/hyuPythonCodeGen";
 import { autoflTool } from "./implementations/autoflTool";
+import { autoDebugTool } from "./implementations/autoDebugTool";
 
 // I'm writing these as functions because we've messed up 3 TIMES by pushing to const, causing duplicate tool definitions on subsequent config loads.
 export const getBaseToolDefinitions = () => [
@@ -17,6 +18,7 @@ export const getBaseToolDefinitions = () => [
   toolDefinitions.fetchUrlContentTool,
   pythonCodeGenTool,
   autoflTool,
+  autoDebugTool,
 ];
 
 export const getConfigDependentToolDefinitions = (

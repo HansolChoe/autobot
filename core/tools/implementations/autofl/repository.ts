@@ -1,10 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import {
-  RepositoryInterface,
-  CodeSnippet,
-  FunctionDescription,
-} from "./types";
+import { CodeSnippet, FunctionDescription, RepositoryInterface } from "./types";
 
 const util = require("node:util");
 const asyncExec = util.promisify(require("node:child_process").exec);
@@ -167,8 +163,13 @@ export class GenericRepositoryInterface implements RepositoryInterface {
 
     // Look for plain AssertionError in simple Python scripts
     // If we have AssertionError but no test signatures yet, treat the whole file as a failing test
-    if (this.failingTestSignatures.length === 0 && output.includes("AssertionError")) {
-      console.log("[AutoFL] Found AssertionError, treating as simple script failure");
+    if (
+      this.failingTestSignatures.length === 0 &&
+      output.includes("AssertionError")
+    ) {
+      console.log(
+        "[AutoFL] Found AssertionError, treating as simple script failure",
+      );
       // Extract file path from traceback
       const filePattern = /File "([^"]+)", line (\d+)/;
       const fileMatch = filePattern.exec(output);
@@ -180,7 +181,10 @@ export class GenericRepositoryInterface implements RepositoryInterface {
       }
     }
 
-    console.log("[AutoFL] Total failing test signatures:", this.failingTestSignatures.length);
+    console.log(
+      "[AutoFL] Total failing test signatures:",
+      this.failingTestSignatures.length,
+    );
 
     // Extract traceback information
     this.extractPythonTracebacks(output);
@@ -609,9 +613,13 @@ export class GenericRepositoryInterface implements RepositoryInterface {
           if (entry.isDirectory()) {
             // Skip common non-source directories
             if (
-              ["node_modules", ".git", "__pycache__", "venv", "target"].includes(
-                entry.name,
-              )
+              [
+                "node_modules",
+                ".git",
+                "__pycache__",
+                "venv",
+                "target",
+              ].includes(entry.name)
             ) {
               continue;
             }
@@ -640,9 +648,13 @@ export class GenericRepositoryInterface implements RepositoryInterface {
           const fullPath = path.join(dir, entry.name);
           if (entry.isDirectory()) {
             if (
-              ["node_modules", ".git", "__pycache__", "venv", "target"].includes(
-                entry.name,
-              )
+              [
+                "node_modules",
+                ".git",
+                "__pycache__",
+                "venv",
+                "target",
+              ].includes(entry.name)
             ) {
               continue;
             }

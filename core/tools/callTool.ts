@@ -5,6 +5,7 @@ import { canParseUrl } from "../util/url";
 import { BuiltInToolNames } from "./builtIn";
 
 import { autoflImpl } from "./implementations/autoflTool";
+import { autoDebugImpl } from "./implementations/autoDebugTool";
 import { codebaseToolImpl } from "./implementations/codebaseTool";
 import { createNewFileImpl } from "./implementations/createNewFile";
 import { createRuleBlockImpl } from "./implementations/createRuleBlock";
@@ -184,6 +185,8 @@ export async function callBuiltInTool(
       return await pythonCodeGenImpl(args, extras);
     case BuiltInToolNames.AutoFL:
       return await autoflImpl(args, extras);
+    case BuiltInToolNames.AutoDebug:
+      return await autoDebugImpl(args, extras);
     case BuiltInToolNames.ViewRepoMap:
       return await viewRepoMapImpl(args, extras);
     case BuiltInToolNames.ViewSubdirectory:

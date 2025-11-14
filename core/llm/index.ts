@@ -978,6 +978,11 @@ export abstract class BaseLLM implements ILLM {
       completionOptions.stream = false;
     }
 
+    // Set default temperature for chat conversations (but don't override if already set)
+    if (completionOptions.temperature === undefined) {
+      completionOptions.temperature = 0.1;
+    }
+
     return completionOptions;
   }
 

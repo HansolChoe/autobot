@@ -1,7 +1,11 @@
 import * as YAML from "yaml";
 import { IDE } from "..";
 import { joinPathsToUri } from "../util/uri";
-import { AUTOFL_SLASH_COMMAND, PYTHON_SLASH_COMMAND } from "./prompts";
+import {
+  AUTO_DEBUG_SLASH_COMMAND,
+  AUTOFL_SLASH_COMMAND,
+  PYTHON_SLASH_COMMAND,
+} from "./prompts";
 
 /**
  * Indents a multi-line string by adding the specified indentation to each line
@@ -40,7 +44,11 @@ mcpServers:
 # https://docs.continue.dev/customization/slash-commands
 prompts:
 ${indentString(
-  YAML.stringify([PYTHON_SLASH_COMMAND, AUTOFL_SLASH_COMMAND]),
+  YAML.stringify([
+    PYTHON_SLASH_COMMAND,
+    AUTOFL_SLASH_COMMAND,
+    AUTO_DEBUG_SLASH_COMMAND,
+  ]),
   "  ",
 )}
 `;
