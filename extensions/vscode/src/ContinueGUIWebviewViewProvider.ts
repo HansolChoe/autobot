@@ -157,6 +157,12 @@ export class ContinueGUIWebviewViewProvider
         <script>localStorage.setItem("ide", '"vscode"')</script>
         <script>localStorage.setItem("vsCodeUriScheme", '"${getvsCodeUriScheme()}"')</script>
         <script>localStorage.setItem("extensionVersion", '"${getExtensionVersion()}"')</script>
+        ${
+          process.env.NODE_ENV === "e2e"
+            ? `<script>localStorage.setItem("onboardingStatus", '"Completed"')</script>
+        <script>localStorage.setItem("hasDismissedOnboardingCard", "true")</script>`
+            : ""
+        }
         <script>window.windowId = "${this.windowId}"</script>
         <script>window.vscMachineId = "${getUniqueId()}"</script>
         <script>window.vscMediaUrl = "${vscMediaUrl}"</script>

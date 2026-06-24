@@ -1,6 +1,7 @@
 {
   "typescript.updateImportsOnFileMove.enabled": "always",
   "workbench.editor.enablePreview": true,
+  "workbench.welcomePage.experimentalOnboarding": false,
   "git.autoRepositoryDetection": false,
   "terminal.integrated.sendKeybindingsToShell": true,
   "workbench.remoteIndicator.showExtensionRecommendations": false,

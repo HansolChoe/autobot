@@ -1,5 +1,4 @@
 import {
-  InputBox,
   Key,
   WebDriver,
   WebElement,
@@ -14,15 +13,6 @@ import { TestUtils } from "../TestUtils";
 export class GUIActions {
   public static moveContinueToSidebar = async (driver: WebDriver) => {
     await GUIActions.toggleGui();
-    await TestUtils.waitForSuccess(async () => {
-      await new Workbench().executeCommand("View: Move View");
-      await (
-        await InputBox.create(DEFAULT_TIMEOUT.MD)
-      ).selectQuickPick("Continue");
-      await (
-        await InputBox.create(DEFAULT_TIMEOUT.MD)
-      ).selectQuickPick("New Secondary Side Bar Entry");
-    });
 
     // first call focuses the input
     await TestUtils.waitForTimeout(DEFAULT_TIMEOUT.XS);
@@ -42,14 +32,14 @@ export class GUIActions {
     for (let i = 0; i < iframes.length; i++) {
       const iframe = iframes[i];
       const src = await iframe.getAttribute("src");
-      if (src.includes("extensionId=ETRI.autobot")) {
+      if (src?.includes("extensionId=ETRI.autobot")) {
         continueIFrame = iframe;
         break;
       }
     }
 
     if (!continueIFrame) {
-      throw new Error("Could not find Continue iframe");
+      throw new Error("Could not find Autobot iframe");
     }
 
     await driver.switchTo().frame(continueIFrame);
@@ -73,7 +63,9 @@ export class GUIActions {
 
   public static toggleGui = async () => {
     return TestUtils.waitForSuccess(() =>
-      new Workbench().executeCommand("continue.focusContinueInput"),
+      new Workbench().executeCommand(
+        "Add Highlighted Code to Context and Clear Chat",
+      ),
     );
   };
 
